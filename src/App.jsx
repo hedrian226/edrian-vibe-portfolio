@@ -4,6 +4,13 @@ import './styles.css';
 
 const roles = ['VIBE CODER', 'AI BUILDER', 'AUTOMATION MAKER', 'PROBLEM SOLVER'];
 const skills = ['React','Vite','JavaScript','HTML/CSS','Supabase','GitHub','Vercel','AI Tools','Automation','Rapid Prototyping'];
+const sectionIds = ['top','about','process','work','contact'];
+const processSteps = [
+  { number:'01', title:'IDEA', copy:'Find the useful core and remove the noise.' },
+  { number:'02', title:'PROMPT', copy:'Turn direction into a focused build plan.' },
+  { number:'03', title:'PROTOTYPE', copy:'Make the real interaction, then test it fast.' },
+  { number:'04', title:'SHIP', copy:'Polish the details and put it in people’s hands.' },
+];
 const projects = [
   { number:'01', type:'WEB APP · LIVE', title:'Roll Call', description:'A practical attendance platform for teams — employee sign-in, HR controls, daily attendance, PIN protection and reporting.', tags:['React / HTML','Supabase','Vercel'], url:'https://roll-call-app-tau.vercel.app/', featured:true },
 ];
@@ -63,6 +70,8 @@ function StrokeText({children}){return <span className="stroke-text" aria-label=
 
 export default function App(){
   useReveal();
+  const [sectionIndex,setSectionIndex]=useState(0);
+  const [cursorMode,setCursorMode]=useState('');
   const [showIntro,setShowIntro]=useState(()=>{
     if(typeof window==='undefined'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return false;
     try{return sessionStorage.getItem('edrian-intro-seen')!=='1';}catch{return true;}
@@ -73,11 +82,38 @@ export default function App(){
     const timer=setTimeout(()=>{setShowIntro(false);try{sessionStorage.setItem('edrian-intro-seen','1');}catch{/* session storage can be unavailable */}},2450);
     return()=>clearTimeout(timer);
   },[showIntro]);
-  useEffect(()=>{const onMove=e=>{document.documentElement.style.setProperty('--cursor-x',`${e.clientX}px`);document.documentElement.style.setProperty('--cursor-y',`${e.clientY}px`)};window.addEventListener('pointermove',onMove,{passive:true});return()=>window.removeEventListener('pointermove',onMove)},[]);
+  useEffect(()=>{
+    const onMove=e=>{
+      document.documentElement.style.setProperty('--cursor-x',`${e.clientX}px`);
+      document.documentElement.style.setProperty('--cursor-y',`${e.clientY}px`);
+      const target=e.target instanceof Element?e.target.closest('[data-cursor]'):null;
+      const mode=target?.getAttribute('data-cursor')||'';
+      setCursorMode(current=>current===mode?current:mode);
+    };
+    window.addEventListener('pointermove',onMove,{passive:true});
+    return()=>window.removeEventListener('pointermove',onMove);
+  },[]);
+  useEffect(()=>{
+    let frame;
+    const update=()=>{
+      const max=Math.max(document.documentElement.scrollHeight-window.innerHeight,1);
+      let index=0;
+      sectionIds.forEach((id,i)=>{const node=document.getElementById(id);if(node&&node.getBoundingClientRect().top<=window.innerHeight*.46)index=i;});
+      document.documentElement.style.setProperty('--scroll-progress',String(Math.min(window.scrollY/max,1)));
+      setSectionIndex(current=>current===index?current:index);
+      frame=undefined;
+    };
+    const onScroll=()=>{if(!frame)frame=requestAnimationFrame(update);};
+    update();
+    window.addEventListener('scroll',onScroll,{passive:true});
+    window.addEventListener('resize',onScroll,{passive:true});
+    return()=>{window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onScroll);if(frame)cancelAnimationFrame(frame);};
+  },[]);
   const year=new Date().getFullYear();
   return <div className={`site-shell ${showIntro?'intro-active':'intro-ready'}`}>
     {showIntro&&<div className="boot-screen" role="status" aria-label="Loading Edrian's portfolio"><div className="boot-scan"/><div className="boot-content"><span className="boot-status"><i/> SYSTEM ONLINE</span><strong>EDRIAN<span>.DEV</span></strong><div className="boot-progress"><i/></div><span className="boot-copy">INITIALIZING CREATIVE SYSTEMS</span></div></div>}
-    <div className="cursor-glow" aria-hidden="true"/><div className="grain" aria-hidden="true"/>
+    <div className="cursor-glow" aria-hidden="true"/><div className={`smart-cursor ${cursorMode?'is-active':''}`} aria-hidden="true"><span>{cursorMode}</span></div><div className="grain" aria-hidden="true"/>
+    <aside className="scroll-rail" aria-label={`Section ${sectionIndex+1} of ${sectionIds.length}`}><span>{String(sectionIndex+1).padStart(2,'0')}</span><div className="scroll-rail-track"><i/></div><span>{String(sectionIds.length).padStart(2,'0')}</span></aside>
     <header className="site-nav">
       <MagneticLink className="brand" href="#top"><span className="brand-dot"/><span>EDRIAN<span className="brand-dim">.DEV</span></span></MagneticLink>
       <nav><MagneticLink href="#about">about</MagneticLink><MagneticLink href="#work">work</MagneticLink><MagneticLink href="#contact">contact</MagneticLink></nav>
@@ -91,12 +127,12 @@ export default function App(){
             <p className="hero-kicker">I BUILD THINGS WITH <RotatingRole/></p>
             <h1 className="hero-title"><span className="title-line">IDEAS INTO</span><StrokeText>REAL THINGS.</StrokeText></h1>
             <p className="hero-description">I turn rough ideas into useful digital products — from attendance systems and internal tools to interactive web experiences.</p>
-            <div className="hero-actions"><MagneticLink href="#work" className="button button-primary">Explore my work <span>↓</span></MagneticLink><MagneticLink href="mailto:hedrian226@gmail.com" className="button button-ghost"><span className="status-dot"/> Available for ideas</MagneticLink></div>
+            <div className="hero-actions"><MagneticLink href="#work" className="button button-primary" data-cursor="SCROLL">Explore my work <span>↓</span></MagneticLink><MagneticLink href="mailto:hedrian226@gmail.com" className="button button-ghost" data-cursor="MAIL"><span className="status-dot"/> Available for ideas</MagneticLink></div>
             <div className="hero-meta"><span>Based in UAE</span><span className="meta-separator">/</span><span>Building with AI + code</span></div>
           </div>
-          <div className="hero-card"><div className="lanyard-frame"><Lanyard position={[0,0,24]} gravity={[0,-40,0]} frontImage="/id-card.svg" imageFit="cover" lanyardWidth={1}/></div><div className="lanyard-label"><span>DRAG THE ID</span><span className="label-arrow">↗</span></div></div>
+          <div className="hero-card" data-cursor="DRAG"><div className="lanyard-frame"><Lanyard position={[0,0,24]} gravity={[0,-40,0]} frontImage="/id-card.svg" imageFit="cover" lanyardWidth={1}/></div><div className="lanyard-label"><span>DRAG THE ID</span><span className="label-arrow">↗</span></div></div>
         </div>
-        <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"/><span className="hero-index">01 / 05</span></div>
+        <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"/><span className="hero-index">{String(sectionIndex+1).padStart(2,'0')} / {String(sectionIds.length).padStart(2,'0')}</span></div>
       </section>
       <div className="skill-marquee"><div className="marquee-track">{marquee.map((skill,i)=><span key={`${skill}-${i}`}>{skill}<b>✦</b></span>)}</div></div>
       <section id="about" className="section about-section">
@@ -106,21 +142,26 @@ export default function App(){
           <div className="about-copy" data-reveal><p className="lead">I’m a <strong>vibe coder</strong> — I use AI as a creative partner, then turn the idea into something people can actually use.</p><p>My process is simple: understand the problem, prototype quickly, test the real thing, and keep improving until it feels right. I care about clean interfaces, useful automation and shipping.</p><div className="about-stats"><div><strong>01</strong><span>Live product shipped</span></div><div><strong>∞</strong><span>Ideas still loading</span></div><div><strong>24/7</strong><span>Curiosity mode</span></div></div></div>
         </div>
       </section>
+      <section id="process" className="section process-section">
+        <div className="section-label" data-reveal><span>02</span><span>BUILDING PROCESS</span></div>
+        <div className="process-intro" data-reveal><div><span className="process-kicker">FROM VIBE TO VALUE</span><h2>HOW I TURN <StrokeText>ENERGY</StrokeText><br/>INTO OUTPUT.</h2></div><p>Fast doesn’t mean careless. Every build moves through a simple system that keeps the idea useful, focused and ready to ship.</p></div>
+        <div className="process-track" data-reveal><div className="process-line"><i/></div>{processSteps.map(step=><article className="process-step" key={step.number}><span className="process-node">{step.number}</span><h3>{step.title}</h3><p>{step.copy}</p></article>)}</div>
+      </section>
       <section id="work" className="section work-section">
-        <div className="section-label" data-reveal><span>02</span><span>SELECTED WORK</span></div>
+        <div className="section-label" data-reveal><span>03</span><span>SELECTED WORK</span></div>
         <div className="work-intro" data-reveal><h2>Things I've <StrokeText>SHIPPED.</StrokeText></h2><p>Small products, real problems, actual users.</p></div>
-        <div className="project-list">{projects.map(project=><TiltCard key={project.number} className="project-card"><a href={project.url} target="_blank" rel="noopener noreferrer" className="project-inner" data-reveal>
+        <div className="project-list">{projects.map(project=><TiltCard key={project.number} className="project-card"><a href={project.url} target="_blank" rel="noopener noreferrer" className="project-inner" data-reveal data-cursor="VIEW ↗">
           <div className="project-top"><span className="project-number">{project.number}</span><span className="project-type">{project.type}</span><span className="project-arrow">↗</span></div>
           <div className="project-body"><div><h3>{project.title}</h3><p>{project.description}</p><div className="tag-row">{project.tags.map(tag=><span key={tag}>{tag}</span>)}</div></div>
-            <div className={`project-preview ${project.featured?'roll-call-preview':'portfolio-preview'}`}><div className="preview-top"><i/><i/><i/><span>{project.featured?'roll-call-app':'edrian.dev'}</span></div><div className="preview-content">{project.featured?<><div className="preview-title">TODAY'S ROLL CALL</div><div className="preview-stat"><AnimatedNumber value={24}/><span>employees</span></div><div className="preview-bars"><i style={{'--bar':'72%'}}/><i style={{'--bar':'48%'}}/><i style={{'--bar':'86%'}}/><i style={{'--bar':'58%'}}/></div></>:<><div className="preview-title">VIBE / BUILD / SHIP</div><div className="preview-outline">01</div><div className="preview-mini-line"/><div className="preview-mini-line short"/></>}</div></div>
+            <div className={`project-preview ${project.featured?'roll-call-preview':'portfolio-preview'}`}><div className="preview-top"><i/><i/><i/><span>{project.featured?'roll-call-app':'edrian.dev'}</span></div><div className="preview-content">{project.featured?<><div className="preview-title">TODAY'S ROLL CALL</div><div className="preview-stat"><AnimatedNumber value={24}/><span>employees</span></div><div className="preview-checkins"><span><i/>E. SANTOS <b>IN</b></span><span><i/>M. CRUZ <b>IN</b></span><span><i/>A. REYES <b>IN</b></span></div><div className="preview-bars"><i style={{'--bar':'72%'}}/><i style={{'--bar':'48%'}}/><i style={{'--bar':'86%'}}/><i style={{'--bar':'58%'}}/></div><div className="preview-toast"><i>✓</i><span>ATTENDANCE SYNCED</span></div></>:<><div className="preview-title">VIBE / BUILD / SHIP</div><div className="preview-outline">01</div><div className="preview-mini-line"/><div className="preview-mini-line short"/></>}</div></div>
           </div>
         </a></TiltCard>)}</div>
         <div className="coming-soon" data-reveal><span className="coming-symbol">+</span><div><span className="project-type">NEXT UP</span><h3>More experiments are cooking.</h3></div><span className="coming-copy">This portfolio grows with every thing I ship.</span></div>
       </section>
       <section className="statement-section"><div className="statement-grid"><span className="statement-mark">✦</span><h2 data-reveal><span>DON'T JUST</span><span className="statement-outline">HAVE AN IDEA.</span><span>BUILD IT.</span></h2></div></section>
       <section id="contact" className="section contact-section">
-        <div className="section-label" data-reveal><span>03</span><span>CONTACT</span></div>
-        <div className="contact-box" data-reveal><div className="contact-copy"><span className="contact-eyebrow">HAVE A PROJECT IN MIND?</span><h2>Let's make<br/><StrokeText>something real.</StrokeText></h2></div><div className="contact-action"><p>For collaborations, ideas, or just saying hello:</p><MagneticLink href="mailto:hedrian226@gmail.com" className="email-link">hedrian226@gmail.com <span>↗</span></MagneticLink></div></div>
+        <div className="section-label" data-reveal><span>04</span><span>CONTACT</span></div>
+        <div className="contact-box" data-reveal><div className="contact-copy"><span className="contact-eyebrow">HAVE A PROJECT IN MIND?</span><h2>Let's make<br/><StrokeText>something real.</StrokeText></h2></div><div className="contact-action"><p>For collaborations, ideas, or just saying hello:</p><MagneticLink href="mailto:hedrian226@gmail.com" className="email-link" data-cursor="MAIL">hedrian226@gmail.com <span>↗</span></MagneticLink></div></div>
       </section>
     </main>
     <footer><span>© {year} EDRIAN HERNANDEZ</span><span>BUILT WITH REACT · THREE.JS · AI</span><a href="https://github.com/hedrian226/edrian-vibe-portfolio" target="_blank" rel="noopener noreferrer">GITHUB ↗</a></footer>
