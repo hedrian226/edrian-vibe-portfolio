@@ -28,19 +28,60 @@ function RotatingRole(){
   useEffect(()=>{const t=setInterval(()=>setIndex(i=>(i+1)%roles.length),2400);return()=>clearInterval(t)},[]);
   return <span className="role-slot" aria-live="polite"><span key={roles[index]} className="role-word">{roles[index]}</span></span>;
 }
+function MagneticLink({children,className='',strength=.16,...props}){
+  const ref=useRef(null);
+  const move=e=>{
+    const el=ref.current;
+    if(!el||window.matchMedia('(hover: none)').matches)return;
+    const r=el.getBoundingClientRect();
+    el.style.setProperty('--magnetic-x',`${(e.clientX-r.left-r.width/2)*strength}px`);
+    el.style.setProperty('--magnetic-y',`${(e.clientY-r.top-r.height/2)*strength}px`);
+  };
+  const leave=()=>{const el=ref.current;if(!el)return;el.style.setProperty('--magnetic-x','0px');el.style.setProperty('--magnetic-y','0px');};
+  return <a ref={ref} className={`magnetic ${className}`} onPointerMove={move} onPointerLeave={leave} {...props}>{children}</a>;
+}
+function AnimatedNumber({value}){
+  const ref=useRef(null);
+  const [display,setDisplay]=useState(0);
+  useEffect(()=>{
+    const node=ref.current;
+    if(!node)return undefined;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){setDisplay(value);return undefined;}
+    let frame;
+    const observer=new IntersectionObserver(([entry])=>{
+      if(!entry.isIntersecting)return;
+      const start=performance.now();
+      const tick=now=>{const progress=Math.min((now-start)/900,1);setDisplay(Math.round(value*(1-Math.pow(1-progress,3))));if(progress<1)frame=requestAnimationFrame(tick);};
+      frame=requestAnimationFrame(tick);observer.disconnect();
+    },{threshold:.5});
+    observer.observe(node);
+    return()=>{observer.disconnect();if(frame)cancelAnimationFrame(frame);};
+  },[value]);
+  return <b ref={ref}>{display}</b>;
+}
 function StrokeText({children}){return <span className="stroke-text" aria-label={children}><span className="stroke-text-outline">{children}</span><span className="stroke-text-fill">{children}</span></span>}
 
 export default function App(){
   useReveal();
+  const [showIntro,setShowIntro]=useState(()=>{
+    if(typeof window==='undefined'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return false;
+    try{return sessionStorage.getItem('edrian-intro-seen')!=='1';}catch{return true;}
+  });
   const marquee=useMemo(()=>[...skills,...skills],[]);
+  useEffect(()=>{
+    if(!showIntro)return undefined;
+    const timer=setTimeout(()=>{setShowIntro(false);try{sessionStorage.setItem('edrian-intro-seen','1');}catch{/* session storage can be unavailable */}},2450);
+    return()=>clearTimeout(timer);
+  },[showIntro]);
   useEffect(()=>{const onMove=e=>{document.documentElement.style.setProperty('--cursor-x',`${e.clientX}px`);document.documentElement.style.setProperty('--cursor-y',`${e.clientY}px`)};window.addEventListener('pointermove',onMove,{passive:true});return()=>window.removeEventListener('pointermove',onMove)},[]);
   const year=new Date().getFullYear();
-  return <div className="site-shell">
+  return <div className={`site-shell ${showIntro?'intro-active':'intro-ready'}`}>
+    {showIntro&&<div className="boot-screen" role="status" aria-label="Loading Edrian's portfolio"><div className="boot-scan"/><div className="boot-content"><span className="boot-status"><i/> SYSTEM ONLINE</span><strong>EDRIAN<span>.DEV</span></strong><div className="boot-progress"><i/></div><span className="boot-copy">INITIALIZING CREATIVE SYSTEMS</span></div></div>}
     <div className="cursor-glow" aria-hidden="true"/><div className="grain" aria-hidden="true"/>
     <header className="site-nav">
-      <a className="brand" href="#top"><span className="brand-dot"/><span>EDRIAN<span className="brand-dim">.DEV</span></span></a>
-      <nav><a href="#about">about</a><a href="#work">work</a><a href="#contact">contact</a></nav>
-      <a className="nav-email" href="mailto:hedrian226@gmail.com">let's talk ↗</a>
+      <MagneticLink className="brand" href="#top"><span className="brand-dot"/><span>EDRIAN<span className="brand-dim">.DEV</span></span></MagneticLink>
+      <nav><MagneticLink href="#about">about</MagneticLink><MagneticLink href="#work">work</MagneticLink><MagneticLink href="#contact">contact</MagneticLink></nav>
+      <MagneticLink className="nav-email" href="mailto:hedrian226@gmail.com">let's talk ↗</MagneticLink>
     </header>
     <main id="top">
       <section className="hero">
@@ -50,7 +91,7 @@ export default function App(){
             <p className="hero-kicker">I BUILD THINGS WITH <RotatingRole/></p>
             <h1 className="hero-title"><span className="title-line">IDEAS INTO</span><StrokeText>REAL THINGS.</StrokeText></h1>
             <p className="hero-description">I turn rough ideas into useful digital products — from attendance systems and internal tools to interactive web experiences.</p>
-            <div className="hero-actions"><a href="#work" className="button button-primary">Explore my work <span>↓</span></a><a href="mailto:hedrian226@gmail.com" className="button button-ghost"><span className="status-dot"/> Available for ideas</a></div>
+            <div className="hero-actions"><MagneticLink href="#work" className="button button-primary">Explore my work <span>↓</span></MagneticLink><MagneticLink href="mailto:hedrian226@gmail.com" className="button button-ghost"><span className="status-dot"/> Available for ideas</MagneticLink></div>
             <div className="hero-meta"><span>Based in UAE</span><span className="meta-separator">/</span><span>Building with AI + code</span></div>
           </div>
           <div className="hero-card"><div className="lanyard-frame"><Lanyard position={[0,0,24]} gravity={[0,-40,0]} frontImage="/id-card.svg" imageFit="cover" lanyardWidth={1}/></div><div className="lanyard-label"><span>DRAG THE ID</span><span className="label-arrow">↗</span></div></div>
@@ -71,7 +112,7 @@ export default function App(){
         <div className="project-list">{projects.map(project=><TiltCard key={project.number} className="project-card"><a href={project.url} target="_blank" rel="noopener noreferrer" className="project-inner" data-reveal>
           <div className="project-top"><span className="project-number">{project.number}</span><span className="project-type">{project.type}</span><span className="project-arrow">↗</span></div>
           <div className="project-body"><div><h3>{project.title}</h3><p>{project.description}</p><div className="tag-row">{project.tags.map(tag=><span key={tag}>{tag}</span>)}</div></div>
-            <div className={`project-preview ${project.featured?'roll-call-preview':'portfolio-preview'}`}><div className="preview-top"><i/><i/><i/><span>{project.featured?'roll-call-app':'edrian.dev'}</span></div><div className="preview-content">{project.featured?<><div className="preview-title">TODAY'S ROLL CALL</div><div className="preview-stat"><b>24</b><span>employees</span></div><div className="preview-bars"><i style={{'--bar':'72%'}}/><i style={{'--bar':'48%'}}/><i style={{'--bar':'86%'}}/><i style={{'--bar':'58%'}}/></div></>:<><div className="preview-title">VIBE / BUILD / SHIP</div><div className="preview-outline">01</div><div className="preview-mini-line"/><div className="preview-mini-line short"/></>}</div></div>
+            <div className={`project-preview ${project.featured?'roll-call-preview':'portfolio-preview'}`}><div className="preview-top"><i/><i/><i/><span>{project.featured?'roll-call-app':'edrian.dev'}</span></div><div className="preview-content">{project.featured?<><div className="preview-title">TODAY'S ROLL CALL</div><div className="preview-stat"><AnimatedNumber value={24}/><span>employees</span></div><div className="preview-bars"><i style={{'--bar':'72%'}}/><i style={{'--bar':'48%'}}/><i style={{'--bar':'86%'}}/><i style={{'--bar':'58%'}}/></div></>:<><div className="preview-title">VIBE / BUILD / SHIP</div><div className="preview-outline">01</div><div className="preview-mini-line"/><div className="preview-mini-line short"/></>}</div></div>
           </div>
         </a></TiltCard>)}</div>
         <div className="coming-soon" data-reveal><span className="coming-symbol">+</span><div><span className="project-type">NEXT UP</span><h3>More experiments are cooking.</h3></div><span className="coming-copy">This portfolio grows with every thing I ship.</span></div>
@@ -79,7 +120,7 @@ export default function App(){
       <section className="statement-section"><div className="statement-grid"><span className="statement-mark">✦</span><h2 data-reveal><span>DON'T JUST</span><span className="statement-outline">HAVE AN IDEA.</span><span>BUILD IT.</span></h2></div></section>
       <section id="contact" className="section contact-section">
         <div className="section-label" data-reveal><span>03</span><span>CONTACT</span></div>
-        <div className="contact-box" data-reveal><div className="contact-copy"><span className="contact-eyebrow">HAVE A PROJECT IN MIND?</span><h2>Let's make<br/><StrokeText>something real.</StrokeText></h2></div><div className="contact-action"><p>For collaborations, ideas, or just saying hello:</p><a href="mailto:hedrian226@gmail.com" className="email-link">hedrian226@gmail.com <span>↗</span></a></div></div>
+        <div className="contact-box" data-reveal><div className="contact-copy"><span className="contact-eyebrow">HAVE A PROJECT IN MIND?</span><h2>Let's make<br/><StrokeText>something real.</StrokeText></h2></div><div className="contact-action"><p>For collaborations, ideas, or just saying hello:</p><MagneticLink href="mailto:hedrian226@gmail.com" className="email-link">hedrian226@gmail.com <span>↗</span></MagneticLink></div></div>
       </section>
     </main>
     <footer><span>© {year} EDRIAN HERNANDEZ</span><span>BUILT WITH REACT · THREE.JS · AI</span><a href="https://github.com/hedrian226/edrian-vibe-portfolio" target="_blank" rel="noopener noreferrer">GITHUB ↗</a></footer>
