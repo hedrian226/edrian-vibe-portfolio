@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="1000" viewBox="0 0 660 1000">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;display=swap');
+    .pixel { font-family: 'Press Start 2P', 'Courier New', monospace; }
+  </style>
+  <rect width="660" height="1000" fill="#10120c"/>
+  <rect x="24" y="24" width="612" height="952" fill="none" stroke="#d8ff45" stroke-width="6"/>
+  <rect x="48" y="48" width="564" height="94" fill="#d8ff45"/>
+  <text x="76" y="105" class="pixel" fill="#10120c" font-size="22">EDRIAN.DEV / ACCESS PASS</text>
+  <text x="54" y="208" class="pixel" fill="#d8ff45" font-size="28">VIBE CODER</text>
+  <path d="M54 230H606" stroke="#44483b" stroke-width="4"/>
+  <text x="54" y="294" class="pixel" fill="#f2f0e9" font-size="34">EDRIAN</text>
+  <text x="54" y="344" class="pixel" fill="#f2f0e9" font-size="34">HERNANDEZ</text>
+  <text x="54" y="395" class="pixel" fill="#8c9180" font-size="14">CREATIVE SYSTEMS / UAE</text>
+  <rect x="54" y="440" width="552" height="4" fill="#d8ff45"/>
+  <text x="54" y="487" class="pixel" fill="#8c9180" font-size="13">IDENTIFICATION NUMBER</text>
+  <text x="54" y="525" class="pixel" fill="#d8ff45" font-size="24">VC-26-9184</text>
+  <g fill="#f2f0e9" shape-rendering="crispEdges">
+    <rect x="54" y="590" width="8" height="164"/><rect x="68" y="590" width="18" height="164"/><rect x="94" y="590" width="6" height="164"/>
+    <rect x="108" y="590" width="12" height="164"/><rect x="130" y="590" width="6" height="164"/><rect x="144" y="590" width="20" height="164"/>
+    <rect x="174" y="590" width="8" height="164"/><rect x="190" y="590" width="14" height="164"/><rect x="214" y="590" width="6" height="164"/>
+    <rect x="230" y="590" width="10" height="164"/><rect x="250" y="590" width="22" height="164"/><rect x="282" y="590" width="6" height="164"/>
+    <rect x="298" y="590" width="16" height="164"/><rect x="324" y="590" width="8" height="164"/><rect x="340" y="590" width="12" height="164"/>
+    <rect x="362" y="590" width="6" height="164"/><rect x="378" y="590" width="18" height="164"/><rect x="406" y="590" width="10" height="164"/>
+    <rect x="426" y="590" width="6" height="164"/><rect x="440" y="590" width="20" height="164"/><rect x="470" y="590" width="8" height="164"/>
+    <rect x="488" y="590" width="14" height="164"/><rect x="512" y="590" width="6" height="164"/><rect x="528" y="590" width="22" height="164"/>
+    <rect x="560" y="590" width="8" height="164"/><rect x="578" y="590" width="18" height="164"/>
+  </g>
+  <text x="54" y="793" class="pixel" fill="#8c9180" font-size="13">110010 011100 101101 001101</text>
+  <path d="M54 850H606" stroke="#44483b" stroke-width="4"/>
+  <text x="54" y="897" class="pixel" fill="#d8ff45" font-size="16">BUILD / TEST / SHIP</text>
+  <text x="54" y="934" class="pixel" fill="#8c9180" font-size="12">NOT A PHOTO. A PASS.</text>
+  <rect x="558" y="874" width="48" height="48" fill="#d8ff45"/>
+  <path d="M570 898h24M582 886v24" stroke="#10120c" stroke-width="5"/>
+</svg>

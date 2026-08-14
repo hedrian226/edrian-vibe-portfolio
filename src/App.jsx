@@ -6,7 +6,6 @@ const roles = ['VIBE CODER', 'AI BUILDER', 'AUTOMATION MAKER', 'PROBLEM SOLVER']
 const skills = ['React','Vite','JavaScript','HTML/CSS','Supabase','GitHub','Vercel','AI Tools','Automation','Rapid Prototyping'];
 const projects = [
   { number:'01', type:'WEB APP · LIVE', title:'Roll Call', description:'A practical attendance platform for teams — employee sign-in, HR controls, daily attendance, PIN protection and reporting.', tags:['React / HTML','Supabase','Vercel'], url:'https://roll-call-app-tau.vercel.app/', featured:true },
-  { number:'02', type:'PORTFOLIO · THIS SITE', title:'Vibe Portfolio', description:'An experimental portfolio built around motion, interactive UI and a real-time 3D ID lanyard.', tags:['React','Three.js','React Bits style'], url:'https://github.com/hedrian226/edrian-vibe-portfolio', featured:false }
 ];
 
 function useReveal(){
@@ -54,7 +53,7 @@ export default function App(){
             <div className="hero-actions"><a href="#work" className="button button-primary">Explore my work <span>↓</span></a><a href="mailto:hedrian226@gmail.com" className="button button-ghost"><span className="status-dot"/> Available for ideas</a></div>
             <div className="hero-meta"><span>Based in UAE</span><span className="meta-separator">/</span><span>Building with AI + code</span></div>
           </div>
-          <div className="hero-card"><div className="lanyard-frame"><Lanyard position={[0,0,24]} gravity={[0,-40,0]} frontImage="/profile.png" imageFit="cover" lanyardWidth={1}/></div><div className="lanyard-label"><span>DRAG THE ID</span><span className="label-arrow">↗</span></div></div>
+          <div className="hero-card"><div className="lanyard-frame"><Lanyard position={[0,0,24]} gravity={[0,-40,0]} frontImage="/id-card.svg" imageFit="cover" lanyardWidth={1}/></div><div className="lanyard-label"><span>DRAG THE ID</span><span className="label-arrow">↗</span></div></div>
         </div>
         <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"/><span className="hero-index">01 / 05</span></div>
       </section>
