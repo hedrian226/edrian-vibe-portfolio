@@ -1,175 +1,88 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Lanyard from './components/Lanyard';
 import './styles.css';
 
-export default function App() {
-  useEffect(() => {
-    const glow = document.getElementById('glow');
+const roles = ['VIBE CODER', 'AI BUILDER', 'AUTOMATION MAKER', 'PROBLEM SOLVER'];
+const skills = ['React','Vite','JavaScript','HTML/CSS','Supabase','GitHub','Vercel','AI Tools','Automation','Rapid Prototyping'];
+const projects = [
+  { number:'01', type:'WEB APP · LIVE', title:'Roll Call', description:'A practical attendance platform for teams — employee sign-in, HR controls, daily attendance, PIN protection and reporting.', tags:['React / HTML','Supabase','Vercel'], url:'https://roll-call-app-tau.vercel.app/', featured:true },
+  { number:'02', type:'PORTFOLIO · THIS SITE', title:'Vibe Portfolio', description:'An experimental portfolio built around motion, interactive UI and a real-time 3D ID lanyard.', tags:['React','Three.js','React Bits style'], url:'https://github.com/hedrian226/edrian-vibe-portfolio', featured:false }
+];
 
-    const move = (e) => {
-      glow?.style.setProperty('--mx', `${e.clientX}px`);
-      glow?.style.setProperty('--my', `${e.clientY}px`);
-    };
+function useReveal(){
+  useEffect(()=>{
+    const nodes=document.querySelectorAll('[data-reveal]');
+    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+      if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}
+    }),{threshold:.12,rootMargin:'0px 0px -60px 0px'});
+    nodes.forEach(n=>observer.observe(n)); return ()=>observer.disconnect();
+  },[]);
+}
+function TiltCard({children,className=''}){
+  const ref=useRef(null);
+  const move=e=>{const el=ref.current;if(!el)return;const r=el.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;el.style.setProperty('--rx',`${(.5-y)*8}deg`);el.style.setProperty('--ry',`${(x-.5)*8}deg`);el.style.setProperty('--mx',`${x*100}%`);el.style.setProperty('--my',`${y*100}%`);};
+  const leave=()=>{const el=ref.current;if(!el)return;el.style.setProperty('--rx','0deg');el.style.setProperty('--ry','0deg');};
+  return <div ref={ref} className={`tilt-card ${className}`} onPointerMove={move} onPointerLeave={leave}>{children}</div>;
+}
+function RotatingRole(){
+  const [index,setIndex]=useState(0);
+  useEffect(()=>{const t=setInterval(()=>setIndex(i=>(i+1)%roles.length),2400);return()=>clearInterval(t)},[]);
+  return <span className="role-slot" aria-live="polite"><span key={roles[index]} className="role-word">{roles[index]}</span></span>;
+}
+function StrokeText({children}){return <span className="stroke-text" aria-label={children}><span className="stroke-text-outline">{children}</span><span className="stroke-text-fill">{children}</span></span>}
 
-    window.addEventListener('pointermove', move);
-    return () => window.removeEventListener('pointermove', move);
-  }, []);
-
-  useEffect(() => {
-    const els = document.querySelectorAll('.reveal');
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in');
-            io.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-
-  return (
-    <>
-      <div className="glow" id="glow" />
-      <div className="noise" />
-
-      <header>
-        <div className="logo"><span className="dot" />vibe.dev</div>
-        <nav>
-          <ul>
-            <li><a href="#about">about</a></li>
-            <li><a href="#work">work</a></li>
-            <li><a href="#contact">contact</a></li>
-          </ul>
-        </nav>
-      </header>
-
+export default function App(){
+  useReveal();
+  const marquee=useMemo(()=>[...skills,...skills],[]);
+  useEffect(()=>{const onMove=e=>{document.documentElement.style.setProperty('--cursor-x',`${e.clientX}px`);document.documentElement.style.setProperty('--cursor-y',`${e.clientY}px`)};window.addEventListener('pointermove',onMove,{passive:true});return()=>window.removeEventListener('pointermove',onMove)},[]);
+  const year=new Date().getFullYear();
+  return <div className="site-shell">
+    <div className="cursor-glow" aria-hidden="true"/><div className="grain" aria-hidden="true"/>
+    <header className="site-nav">
+      <a className="brand" href="#top"><span className="brand-dot"/><span>EDRIAN<span className="brand-dim">.DEV</span></span></a>
+      <nav><a href="#about">about</a><a href="#work">work</a><a href="#contact">contact</a></nav>
+      <a className="nav-email" href="mailto:hedrian226@gmail.com">let's talk ↗</a>
+    </header>
+    <main id="top">
       <section className="hero">
-        <div className="hero-copy">
-          <div className="eyebrow mono">Portfolio — vibe coder</div>
-          <h1 className="headline">
-            I build in <span className="accent">flow state,</span> not flowcharts.
-          </h1>
-          <p className="sub">
-            No specs, no roadmaps — just an idea, an AI pair, and a keyboard.
-            I ship fast, iterate faster, and let the vibe decide what gets built next.
-          </p>
-          <div className="cta-row">
-            <a href="#work" className="btn primary">See the work ↓</a>
-            <a href="#contact" className="btn ghost">Say hi</a>
+        <div className="hero-grid">
+          <div className="hero-copy">
+            <div className="eyebrow"><span className="eyebrow-line"/>PORTFOLIO · 2026</div>
+            <p className="hero-kicker">I BUILD THINGS WITH <RotatingRole/></p>
+            <h1 className="hero-title"><span className="title-line">IDEAS INTO</span><StrokeText>REAL THINGS.</StrokeText></h1>
+            <p className="hero-description">I turn rough ideas into useful digital products — from attendance systems and internal tools to interactive web experiences.</p>
+            <div className="hero-actions"><a href="#work" className="button button-primary">Explore my work <span>↓</span></a><a href="mailto:hedrian226@gmail.com" className="button button-ghost"><span className="status-dot"/> Available for ideas</a></div>
+            <div className="hero-meta"><span>Based in UAE</span><span className="meta-separator">/</span><span>Building with AI + code</span></div>
           </div>
+          <div className="hero-card"><div className="lanyard-frame"><Lanyard position={[0,0,24]} gravity={[0,-40,0]} frontImage="/profile.png" imageFit="cover" lanyardWidth={1}/></div><div className="lanyard-label"><span>DRAG THE ID</span><span className="label-arrow">↗</span></div></div>
         </div>
-
-        <div className="hero-lanyard">
-          <Lanyard
-            position={[0, 0, 24]}
-            gravity={[0, -40, 0]}
-            frontImage="/profile.png"
-            imageFit="cover"
-            lanyardWidth={1}
-          />
-        </div>
-
-        <div className="waveform" aria-hidden="true">
-          {[34,62,44,80,30,58,70,40,54].map((h, i) => (
-            <span key={i} style={{ '--h': `${h}px`, animationDelay: `${i * 0.1}s` }} />
-          ))}
-        </div>
-
-        <div className="scroll-cue"><div className="line" />scroll</div>
+        <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"/><span className="hero-index">01 / 05</span></div>
       </section>
-
-      <div className="marquee-wrap">
-        <div className="marquee">
-          {[
-            'Vibe coding','AI pair programming','Rapid prototyping',
-            'Shipping over planning','Frontend','Full stack',
-            'Vibe coding','AI pair programming','Rapid prototyping',
-            'Shipping over planning','Frontend','Full stack'
-          ].map((item, i) => <span key={i}><b>{item}</b></span>)}
-        </div>
-      </div>
-
-      <section id="about">
-        <div className="section-head reveal">
-          <span className="num mono">01</span><h2>About</h2>
-        </div>
-        <div className="about-grid">
-          <div className="reveal">
-            <p>I'm a <strong>vibe coder</strong> — I work fast, trust momentum over meetings, and treat every project like a jam session with an AI co-pilot. Ideas turn into working products in hours, not sprints.</p>
-            <p>This site is a running log of what I ship. Right now it's one live project — <strong>more are already in the oven</strong> and will land here as soon as they're ready.</p>
-          </div>
-          <div className="reveal">
-            <div className="stat-card"><div className="n">1</div><div className="l">Live project shipped</div></div>
-            <div className="stat-card"><div className="n">∞</div><div className="l">Ideas in the pipeline</div></div>
-          </div>
+      <div className="skill-marquee"><div className="marquee-track">{marquee.map((skill,i)=><span key={`${skill}-${i}`}>{skill}<b>✦</b></span>)}</div></div>
+      <section id="about" className="section about-section">
+        <div className="section-label" data-reveal><span>01</span><span>ABOUT / APPROACH</span></div>
+        <div className="about-layout">
+          <div className="about-heading" data-reveal><h2><span>I like the</span><StrokeText>BUILDING</StrokeText><span>part.</span></h2></div>
+          <div className="about-copy" data-reveal><p className="lead">I’m a <strong>vibe coder</strong> — I use AI as a creative partner, then turn the idea into something people can actually use.</p><p>My process is simple: understand the problem, prototype quickly, test the real thing, and keep improving until it feels right. I care about clean interfaces, useful automation and shipping.</p><div className="about-stats"><div><strong>01</strong><span>Live product shipped</span></div><div><strong>∞</strong><span>Ideas still loading</span></div><div><strong>24/7</strong><span>Curiosity mode</span></div></div></div>
         </div>
       </section>
-
-      <section id="work">
-        <div className="section-head reveal">
-          <span className="num mono">02</span><h2>Work</h2>
-        </div>
-        <div className="projects">
-          <div className="project-card reveal">
-            <div className="project-info">
-              <span className="tag mono">Web App · Live</span>
-              <h3>Roll Call</h3>
-              <p>A clean, fast attendance app — check people in, track who's here, and keep roll call painless. Built and shipped end to end.</p>
-              <a className="project-link" href="https://roll-call-app-tau.vercel.app/" target="_blank" rel="noopener noreferrer">
-                Visit the live app
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
-                </svg>
-              </a>
-            </div>
-            <a href="https://roll-call-app-tau.vercel.app/" target="_blank" rel="noopener noreferrer" className="browser-frame">
-              <div className="browser-bar">
-                <span className="dot" /><span className="dot" /><span className="dot" />
-                <span className="url">roll-call-app-tau.vercel.app</span>
-              </div>
-              <div className="browser-body">
-                <div className="mock-ui">
-                  {[1,2,3].map((x) => (
-                    <div className="mock-row" key={x}>
-                      <div className="mock-avatar" /><div className="mock-bar" /><div className="mock-check" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </a>
+      <section id="work" className="section work-section">
+        <div className="section-label" data-reveal><span>02</span><span>SELECTED WORK</span></div>
+        <div className="work-intro" data-reveal><h2>Things I've <StrokeText>SHIPPED.</StrokeText></h2><p>Small products, real problems, actual users.</p></div>
+        <div className="project-list">{projects.map(project=><TiltCard key={project.number} className="project-card"><a href={project.url} target="_blank" rel="noopener noreferrer" className="project-inner" data-reveal>
+          <div className="project-top"><span className="project-number">{project.number}</span><span className="project-type">{project.type}</span><span className="project-arrow">↗</span></div>
+          <div className="project-body"><div><h3>{project.title}</h3><p>{project.description}</p><div className="tag-row">{project.tags.map(tag=><span key={tag}>{tag}</span>)}</div></div>
+            <div className={`project-preview ${project.featured?'roll-call-preview':'portfolio-preview'}`}><div className="preview-top"><i/><i/><i/><span>{project.featured?'roll-call-app':'edrian.dev'}</span></div><div className="preview-content">{project.featured?<><div className="preview-title">TODAY'S ROLL CALL</div><div className="preview-stat"><b>24</b><span>employees</span></div><div className="preview-bars"><i style={{'--bar':'72%'}}/><i style={{'--bar':'48%'}}/><i style={{'--bar':'86%'}}/><i style={{'--bar':'58%'}}/></div></>:<><div className="preview-title">VIBE / BUILD / SHIP</div><div className="preview-outline">01</div><div className="preview-mini-line"/><div className="preview-mini-line short"/></>}</div></div>
           </div>
-
-          <div className="project-card soon reveal">
-            <div className="plus">+</div>
-            <span className="tag mono">In progress</span>
-            <h3>Next one's cooking</h3>
-            <p>More projects are on the way — this space fills up as soon as they ship.</p>
-          </div>
-        </div>
+        </a></TiltCard>)}</div>
+        <div className="coming-soon" data-reveal><span className="coming-symbol">+</span><div><span className="project-type">NEXT UP</span><h3>More experiments are cooking.</h3></div><span className="coming-copy">This portfolio grows with every thing I ship.</span></div>
       </section>
-
-      <section id="contact" className="contact reveal">
-        <div className="section-head contact-head">
-          <span className="num mono">03</span>
-          <h2>Contact</h2>
-        </div>
-        <h2>Got an idea? Let's <span className="accent">vibe it into existence.</span></h2>
-        <a href="mailto:hedrian226@gmail.com" className="btn primary">hedrian226@gmail.com</a>
+      <section className="statement-section"><div className="statement-grid"><span className="statement-mark">✦</span><h2 data-reveal><span>DON'T JUST</span><span className="statement-outline">HAVE AN IDEA.</span><span>BUILD IT.</span></h2></div></section>
+      <section id="contact" className="section contact-section">
+        <div className="section-label" data-reveal><span>03</span><span>CONTACT</span></div>
+        <div className="contact-box" data-reveal><div className="contact-copy"><span className="contact-eyebrow">HAVE A PROJECT IN MIND?</span><h2>Let's make<br/><StrokeText>something real.</StrokeText></h2></div><div className="contact-action"><p>For collaborations, ideas, or just saying hello:</p><a href="mailto:hedrian226@gmail.com" className="email-link">hedrian226@gmail.com <span>↗</span></a></div></div>
       </section>
-
-      <footer>
-        <span>© 2026 vibe.dev — built by feel</span>
-        <div className="socials">
-          <a href="#" onClick={(e) => e.preventDefault()}>GitHub</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>Twitter</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>LinkedIn</a>
-        </div>
-      </footer>
-    </>
-  );
+    </main>
+    <footer><span>© {year} EDRIAN HERNANDEZ</span><span>BUILT WITH REACT · THREE.JS · AI</span><a href="https://github.com/hedrian226/edrian-vibe-portfolio" target="_blank" rel="noopener noreferrer">GITHUB ↗</a></footer>
+  </div>;
 }
