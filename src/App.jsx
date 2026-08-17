@@ -16,6 +16,7 @@ const projects = [
   { number:'02', type:'COMMERCE · LIVE', title:'MaxCare Shop', description:'A shoppable beauty-supply catalogue for the UAE — product search, category filters, multi-item enquiry building and direct WhatsApp ordering.', tags:['Product Catalog','Enquiry Flow','Vercel'], url:'https://maxcare-shop.vercel.app/', preview:'maxcare' },
   { number:'03', type:'GAME · LIVE', title:'Brew DXB', description:'A pixel-powered coffee-quest game for Dubai — check in at real cafés, earn XP, unlock collectible trading cards and level up your coffee passport.', tags:['Gamification','React / Vite','Vercel'], url:'https://brew-dxb.vercel.app/', preview:'brew' },
 ];
+const bootMessages = ['INITIALIZING CREATIVE SYSTEMS','COMPILING VIBES','LOADING PROJECTS','WARMING UP PIXELS'];
 
 function useReveal(){
   useEffect(()=>{
@@ -84,6 +85,20 @@ export default function App(){
     const timer=setTimeout(()=>{setShowIntro(false);try{sessionStorage.setItem('edrian-intro-seen','1');}catch{/* session storage can be unavailable */}},2450);
     return()=>clearTimeout(timer);
   },[showIntro]);
+  const [bootPercent,setBootPercent]=useState(0);
+  const [bootMsgIndex,setBootMsgIndex]=useState(0);
+  useEffect(()=>{
+    if(!showIntro)return undefined;
+    const duration=1900;
+    const start=performance.now();
+    let frame=requestAnimationFrame(function tick(now){
+      const elapsed=now-start;
+      setBootPercent(Math.min(100,Math.round((elapsed/duration)*100)));
+      if(elapsed<duration)frame=requestAnimationFrame(tick);
+    });
+    const msgTimer=setInterval(()=>setBootMsgIndex(i=>(i+1)%bootMessages.length),420);
+    return()=>{cancelAnimationFrame(frame);clearInterval(msgTimer);};
+  },[showIntro]);
   useEffect(()=>{
     const onMove=e=>{
       document.documentElement.style.setProperty('--cursor-x',`${e.clientX}px`);
@@ -113,7 +128,17 @@ export default function App(){
   },[]);
   const year=new Date().getFullYear();
   return <div className={`site-shell ${showIntro?'intro-active':'intro-ready'}`}>
-    {showIntro&&<div className="boot-screen" role="status" aria-label="Loading Edrian's portfolio"><div className="boot-scan"/><div className="boot-content"><span className="boot-status"><i/> SYSTEM ONLINE</span><strong>EDRIAN<span>.DEV</span></strong><div className="boot-progress"><i/></div><span className="boot-copy">INITIALIZING CREATIVE SYSTEMS</span></div></div>}
+    {showIntro&&<div className="boot-screen" role="status" aria-label="Loading Edrian's portfolio">
+      <div className="boot-scan"/>
+      <div className="boot-frame"><i/><i/><i/><i/></div>
+      <div className="boot-content">
+        <div className="boot-orbit"/><div className="boot-orbit boot-orbit-alt"/>
+        <span className="boot-status"><i/> SYSTEM ONLINE</span>
+        <strong>EDRIAN<span>.DEV</span></strong>
+        <div className="boot-progress"><i style={{transform:`scaleX(${bootPercent/100})`}}/></div>
+        <div className="boot-meta"><span className="boot-copy">{bootMessages[bootMsgIndex]}</span><span className="boot-percent">{String(bootPercent).padStart(2,'0')}%</span></div>
+      </div>
+    </div>}
     <div className="cursor-glow" aria-hidden="true"/><div className={`smart-cursor ${cursorMode?'is-active':''}`} aria-hidden="true"><span>{cursorMode}</span></div><div className="grain" aria-hidden="true"/>
     <aside className="scroll-rail" aria-label={`Section ${sectionIndex+1} of ${sectionIds.length}`}><span>{String(sectionIndex+1).padStart(2,'0')}</span><div className="scroll-rail-track"><i/></div><span>{String(sectionIds.length).padStart(2,'0')}</span></aside>
     <header className="site-nav">
