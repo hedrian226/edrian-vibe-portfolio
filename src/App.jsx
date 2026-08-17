@@ -141,7 +141,7 @@ export default function App(){
         <div className="section-label" data-reveal><span>01</span><span>ABOUT / APPROACH</span></div>
         <div className="about-layout">
           <div className="about-heading" data-reveal><h2><span>I like the</span><StrokeText>BUILDING</StrokeText><span>part.</span></h2></div>
-          <div className="about-copy" data-reveal><p className="lead">I’m a <strong>vibe coder</strong> — I use AI as a creative partner, then turn the idea into something people can actually use.</p><p>My process is simple: understand the problem, prototype quickly, test the real thing, and keep improving until it feels right. I care about clean interfaces, useful automation and shipping.</p><div className="about-stats"><div><strong>02</strong><span>Live products shipped</span></div><div><strong>∞</strong><span>Ideas still loading</span></div><div><strong>24/7</strong><span>Curiosity mode</span></div></div></div>
+          <div className="about-copy" data-reveal><p className="lead">I’m a <strong>vibe coder</strong> — I use AI as a creative partner, then turn the idea into something people can actually use.</p><p>My process is simple: understand the problem, prototype quickly, test the real thing, and keep improving until it feels right. I care about clean interfaces, useful automation and shipping.</p><div className="about-stats"><div><strong>03</strong><span>Live products shipped</span></div><div><strong>∞</strong><span>Ideas still loading</span></div><div><strong>24/7</strong><span>Curiosity mode</span></div></div></div>
         </div>
       </section>
       <section id="process" className="section process-section">
