@@ -1,61 +1,6 @@
-# EDSXEL NGANI — Full React Edition
+# Edrian Hernandez — Vibe Portfolio
 
-This project uses the user's original full-feature EDSXEL NGANI HTML as the
-functionality baseline and mounts it inside a React/Vite application.
-
-The original EDS icon files are preserved exactly:
-- `public/icon-192.png`
-- `public/icon-512.png`
-
-## React / React Bits design layer
-
-React adds a non-destructive visual layer on top of the existing website:
-- Aurora-style animated background
-- Spotlight hover treatment
-- Magnetic button interactions
-- Shiny brand text
-- Scroll-reveal transitions
-- Click spark feedback
-
-The effect choices follow the React Bits component categories and interaction
-patterns, while remaining locally implemented so the project has no paid/pro
-runtime dependency.
-
-## Preserved features from the original full site
-
-- Complete formula library and tutorials
-- Search suggestions / autocomplete
-- Formula comparison
-- Practice mode
-- Formula of the Day
-- Copy variants
-- Related formulas
-- Use-case tags
-- Beginner / Intermediate / Advanced progress
-- Recently Viewed
-- Recently Learned
-- Favorites / bookmarks
-- Personal formula notes
-- Mini Excel playground
-- Error Doctor
-- Formula Builder
-- Keyboard Shortcuts
-- Cheat Sheet generator
-- Shareable formula URLs
-- Mobile bottom navigation
-- English / Taglish mode
-- Learning Paths
-- Popular Formulas
-- Random Formula / Teach Me Something
-- Continue Learning
-- About + privacy section
-- Dark / light mode
-- Back to Top
-- PWA install support
-- Offline service worker
-- Original SEO / social metadata
-
-The previously removed `Fix My File Request` feature remains removed.
+This is the React/Vite version of the portfolio with the real React Bits-style 3D Lanyard.
 
 ## Run locally
 
@@ -64,29 +9,17 @@ npm install
 npm run dev
 ```
 
-## Production build
+## Build for Vercel
 
 ```bash
 npm run build
 ```
 
-For Vercel, import the GitHub repository and select Vite if it is not
-auto-detected.
-
-Framework: Vite
-Build command: `npm run build`
-Output directory: `dist`
+Vercel can deploy this as a standard Vite project. The build output is `dist`.
 
 ## Important
 
-The PWA/service worker requires HTTPS or localhost. It does not install when
-opened directly as a `file://` page.
-
-## Ferrofluid background
-
-The React Bits Ferrofluid WebGL background has been added behind the existing
-EDSXEL NGANI interface using the project's green/copper palette. It keeps
-cursor interaction on desktop and reduces visual intensity on mobile and
-light mode for readability.
-
-Dependency added: `ogl`.
+- Your photo is `public/profile.png`.
+- The 3D card model and lanyard texture are loaded from the public React Bits GitHub CDN.
+- The Lanyard uses React Three Fiber, Drei, Rapier physics, Three.js and MeshLine.
+- The contact email is `hedrian226@gmail.com`.
