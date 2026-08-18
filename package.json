@@ -1,5 +1,5 @@
 {
-  "name": "edrian-vibe-portfolio",
+  "name": "edsxel-ngani",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,16 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.4",
-    "@react-three/fiber": "^9.3.0",
-    "@react-three/rapier": "^2.1.0",
-    "meshline": "^3.3.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "three": "^0.180.0"
-  },
-  "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^5.4.19"
+    "vite": "^6.0.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "ogl": "^1.0.11"
   }
 }
